@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from '@prisma/client';
@@ -7,8 +7,16 @@ import { User } from '@prisma/client';
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    return this.usersRepository.createUser(createUserDto);
+  async create(userDto: CreateUserDto): Promise<User> {
+    const { email } = userDto;
+    const user = await this.usersRepository.getUserByEmail(email);
+    if (user) throw new ConflictException("Email alredy in use.");
+
+    return this.usersRepository.createUser(userDto);
+  }
+
+  async getUserByEmail(email: string) {
+    return await this.usersRepository.getUserByEmail(email);
   }
 
   async findAll(): Promise<User[]> {
