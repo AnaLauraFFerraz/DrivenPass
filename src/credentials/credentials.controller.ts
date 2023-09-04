@@ -20,7 +20,7 @@ export class CredentialsController {
       if (error instanceof ConflictException) {
         throw new ConflictException('Credential with this title already exists.');
       }
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(error.message || 'An error occurred.');
     }
   }
 

@@ -38,15 +38,12 @@ export class AuthService {
         const token = this.jwtService.sign({email}, {
             expiresIn: this.EXPIRATION_TIME,
             subject: String(id),
-            audience: this.AUDIENCE,
         })
         return { token };
     }
 
     checkToken(token: string) {
-        const data = this.jwtService.verify(token,{
-            audience: this.AUDIENCE,
-        });
+        const data = this.jwtService.verify(token);
         return data;
     }
 }

@@ -15,7 +15,7 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       const data = this.authService.checkToken((authorization ?? "").split(" ")[1]);
-      const user = await this.usersService.findById(parseInt(data.subject));
+      const user = await this.usersService.findById(parseInt(data.sub));
       request.user = user;
       return true;
     } catch (error) {
