@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, HttpStatus, ConflictException, BadRequestException, NotFoundException, ForbiddenException, Put } from '@nestjs/common';
 import { CardsService } from './cards.service';
 import { CreateCardDto } from './dto/create-card.dto';
-import { JwtAuthGuard } from 'src/jwt-auth/jwt-auth.guard';
-import { User } from 'src/decorators/user.decorator';
+import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
+import { User } from '../decorators/user.decorator';
 import { User as UserPrisma } from '@prisma/client';
 
 @UseGuards(JwtAuthGuard)

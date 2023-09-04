@@ -2,8 +2,8 @@ import { Controller, Get, Post, Body, Param, Delete, UseGuards, HttpCode,
    HttpStatus, Put, ConflictException, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { CredentialsService } from './credentials.service';
 import { CreateCredentialDto } from './dto/create-credential.dto';
-import { JwtAuthGuard } from 'src/jwt-auth/jwt-auth.guard';
-import { User } from 'src/decorators/user.decorator';
+import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
+import { User } from '../decorators/user.decorator';
 import { User as UserPrisma } from '@prisma/client';
 
 @UseGuards(JwtAuthGuard)

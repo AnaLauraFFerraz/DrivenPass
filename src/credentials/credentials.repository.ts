@@ -1,7 +1,6 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { PrismaService } from "src/prisma/prisma.service";
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
 import { CreateCredentialDto } from "./dto/create-credential.dto";
-import { User } from "@prisma/client";
 
 @Injectable()
 export class CredentialsRepository {

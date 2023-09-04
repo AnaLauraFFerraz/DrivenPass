@@ -1,8 +1,8 @@
 import { Controller, Delete, Body, UseGuards, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { EraseService } from './erase.service';
 import { EraseDto } from './dto/erase.dto';
-import { JwtAuthGuard } from 'src/jwt-auth/jwt-auth.guard';
-import { User } from 'src/decorators/user.decorator';
+import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
+import { User } from '../decorators/user.decorator';
 import { User as UserPrisma } from '@prisma/client';
 
 @UseGuards(JwtAuthGuard)
