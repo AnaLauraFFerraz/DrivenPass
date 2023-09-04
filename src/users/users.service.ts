@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from '@prisma/client';
@@ -23,8 +23,11 @@ export class UsersService {
     return this.usersRepository.findAllUsers();
   }
 
-  async findOne(id: number): Promise<User> {
-    return this.usersRepository.findUserById(id);
+  async getUserById(id: number): Promise<User> {
+    const user = this.usersRepository.findUserById(id);
+    if (!user) throw new NotFoundException("User not found!");
+    
+    return user;
   }
 
   async update(id: number, updateUserDto: CreateUserDto): Promise<User> {
