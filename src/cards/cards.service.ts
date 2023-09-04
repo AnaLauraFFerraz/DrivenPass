@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCardDto } from './dto/create-card.dto';
 import { CardsRepository } from './cards.repository';
-import Cryptr from 'cryptr';
+const Cryptr = require('cryptr');
 import { User } from '@prisma/client';
 
 const cryptr = new Cryptr('YOUR_SECRET_KEY');
