@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, HttpStatus, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, HttpCode,
+   HttpStatus, Put, ConflictException, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { CredentialsService } from './credentials.service';
 import { CreateCredentialDto } from './dto/create-credential.dto';
 import { JwtAuthGuard } from 'src/jwt-auth/jwt-auth.guard';
@@ -13,7 +14,14 @@ export class CredentialsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createCredentialDto: CreateCredentialDto, @User() user: UserPrisma) {
-    return this.credentialsService.create(createCredentialDto, user);
+    try {
+      return this.credentialsService.create(createCredentialDto, user);
+    } catch (error) {
+      if (error instanceof ConflictException) {
+        throw new ConflictException('Credential with this title already exists.');
+      }
+      throw new BadRequestException(error.message);
+    }
   }
 
   @Get()
@@ -23,17 +31,38 @@ export class CredentialsController {
 
   @Get(':id')
   async findOne(@Param('id') id: string, @User() user: UserPrisma) {
-    return await this.credentialsService.findOne(+id, user);
+    try {
+      return await this.credentialsService.findOne(+id, user);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(`Credential not found.`);
+      }
+      throw new ForbiddenException();
+    }
   }
 
   @Put(':id')
   async update(@Param('id') id: string, @Body() updateCredentialDto: CreateCredentialDto, @User() user: UserPrisma) {
-    return await this.credentialsService.update(+id, updateCredentialDto, user);
+    try {
+      return this.credentialsService.update(+id, updateCredentialDto, user);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(`Credential with ID ${id} not found.`);
+      }
+      throw new ForbiddenException();
+    }
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id') id: string, @User() user: UserPrisma) {
-    await this.credentialsService.remove(+id, user);
+    try {
+      return this.credentialsService.remove(+id, user);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(`Credential not found.`);
+      }
+      throw new ForbiddenException();
+    }
   }
 }

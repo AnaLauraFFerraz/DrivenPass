@@ -5,47 +5,38 @@ import { User } from "@prisma/client";
 
 @Injectable()
 export class CredentialsRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
-  async findByTitleForUser(title: string, userId: number) {
-    return this.prisma.credential.findFirst({
-      where: {
-        title: title,
-        userId: userId,
-      },
-    });
-  }
-  
   async create(createCredentialDto: CreateCredentialDto, userId: number) {
-    const { title, url, username, password } = createCredentialDto;
-
     return this.prisma.credential.create({
-        data: {
-            userId,
-            title,
-            url,
-            username,
-            password,
-        }
-    });
-  }
-
-  async findAllByUser(userId: number) {
-    return this.prisma.credential.findMany({
-      where: {
-        userId: userId
+      data: {
+        ...createCredentialDto,
+        userId,
       }
     });
   }
 
-  async findById(id: number, userId: number) {
-    const credential = await this.prisma.credential.findUnique({
-      where: { id }
+  async findByTitleForUser(title: string, userId: number) {
+    return this.prisma.credential.findFirst({
+      where: {
+        title,
+        userId,
+      },
     });
-    if (!credential || credential.userId !== userId) {
-      throw new NotFoundException(`Credential with ID ${id} not found`);
-    }
-    return credential;
+  }
+
+  async findAllForUser(userId: number) {
+    return this.prisma.credential.findMany({
+      where: {
+        userId
+      }
+    });
+  }
+
+  async findByIdForUser(id: number, userId: number) {
+    return this.prisma.credential.findUnique({
+      where: { id, userId }
+    });
   }
 
   async update(id: number, updateCredentialDto: CreateCredentialDto) {

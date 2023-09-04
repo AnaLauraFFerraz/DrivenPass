@@ -24,22 +24,22 @@ export class CredentialsService {
   }
 
   async findAll(user: User) {
-    return await this.credentialsRepository.findAllByUser(user.id);
+    return await this.credentialsRepository.findAllForUser(user.id);
   }
 
   async findOne(id: number, user: User) {
-    const credential = await this.credentialsRepository.findById(id, user.id);
+    const credential = await this.credentialsRepository.findByIdForUser(id, user.id);
     if (!credential) {
-      throw new NotFoundException(`Credential with ID ${id} not found.`);
+      throw new NotFoundException(`Credential not found.`);
     }
     credential.password = cryptr.decrypt(credential.password);
     return credential;
   }
 
   async update(id: number, updateCredentialDto: CreateCredentialDto, user: User) {
-    const existingCredential = await this.credentialsRepository.findById(id, user.id);
+    const existingCredential = await this.credentialsRepository.findByIdForUser(id, user.id);
     if (!existingCredential) {
-      throw new NotFoundException(`Credential with ID ${id} not found.`);
+      throw new NotFoundException(`Credential not found.`);
     }
 
     if (updateCredentialDto.password) {
@@ -50,9 +50,9 @@ export class CredentialsService {
   }
 
   async remove(id: number, user: User) {
-    const existingCredential = await this.credentialsRepository.findById(id, user.id);
+    const existingCredential = await this.credentialsRepository.findByIdForUser(id, user.id);
     if (!existingCredential) {
-      throw new NotFoundException(`Credential with ID ${id} not found.`);
+      throw new NotFoundException(`Credential not found.`);
     }
 
     return await this.credentialsRepository.remove(id);
