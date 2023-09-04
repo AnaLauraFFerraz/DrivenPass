@@ -42,7 +42,14 @@ export class NotesController {
 
   @Put(':id')
   update(@Param('id') id: string, @Body() updateNoteDto: CreateNoteDto, @User() user: UserPrisma) {
-    return this.notesService.update(+id, updateNoteDto, user);
+    try {
+      return this.notesService.update(+id, updateNoteDto, user);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(`Note not found.`);
+      }
+      throw new ForbiddenException();
+    }
   }
 
   @Delete(':id')
