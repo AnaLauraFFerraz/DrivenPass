@@ -6,6 +6,10 @@ export class CreateUserDto {
   email: string;
 
   @IsNotEmpty()
-  @IsStrongPassword()
+  @IsStrongPassword({
+    minLength: 10,
+  }, {
+    message: 'Password too weak',
+  })
   password: string;
 }
