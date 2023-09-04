@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { SignUpDto } from './dto/signup.dto';
 import { SignInDto } from './dto/signin.dto';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service'
 import * as bcrypt from "bcrypt";
 import { User } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
@@ -24,7 +24,7 @@ export class AuthService {
     async signIn(SignInDto: SignInDto) {
         const { email, password } = SignInDto;
         
-        const user = await this.userService.getUserByEmail(email);
+        const user = await this.userService.findByEmail(email);
         if (!user) throw new UnauthorizedException("Email or password not valid.");
 
         const valid = await bcrypt.compare(password, user.password);

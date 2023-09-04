@@ -3,12 +3,12 @@ import { EraseController } from './erase.controller';
 import { EraseService } from './erase.service';
 import { EraseRepository } from './erase.repository';
 import { UsersModule } from 'src/users/users.module';
-import { CredentialsService } from 'src/credentials/credentials.service';
-import { NotesService } from 'src/notes/notes.service';
-import { CardsService } from 'src/cards/cards.service';
+import { CredentialsModule } from 'src/credentials/credentials.module';
+import { NotesModule } from 'src/notes/notes.module';
+import { CardsModule } from 'src/cards/cards.module';
 
 @Module({
-  imports: [UsersModule, CredentialsService, NotesService, CardsService],
+  imports: [UsersModule, CredentialsModule, NotesModule, CardsModule],
   controllers: [EraseController],
   providers: [EraseService, EraseRepository],
   exports: [EraseService]
