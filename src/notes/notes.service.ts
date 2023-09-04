@@ -1,26 +1,47 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
-import { UpdateNoteDto } from './dto/update-note.dto';
+import { NotesRepository } from './notes.repository';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class NotesService {
-  create(createNoteDto: CreateNoteDto) {
-    return 'This action adds a new note';
+
+  constructor(private readonly notesRepository: NotesRepository) {}
+
+  async create(createNoteDto: CreateNoteDto, user: User) {
+    const existingNote = await this.notesRepository.findByTitleForUser(createNoteDto.title, user.id);
+    if (existingNote) {
+      throw new ConflictException('Note with this title already exists.');
+    }
+
+    return await this.notesRepository.create(createNoteDto, user.id);
   }
 
-  findAll() {
-    return `This action returns all notes`;
+  async findAll(user: User) {
+    return await this.notesRepository.findAllForUser(user.id);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} note`;
+  async findOne(id: number, user: User) {
+    const note = await this.notesRepository.findByIdForUser(id, user.id);
+    if (!note) {
+      throw new NotFoundException(`Note not found.`);
+    }
+    return note;
   }
 
-  update(id: number, updateNoteDto: UpdateNoteDto) {
-    return `This action updates a #${id} note`;
+  async update(id: number, updateNoteDto: CreateNoteDto, user: User) {
+    const existingNote = await this.notesRepository.findByIdForUser(id, user.id);
+    if (!existingNote) {
+      throw new NotFoundException(`Note not found.`);
+    }
+    return await this.notesRepository.update(id, updateNoteDto, user.id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} note`;
+  async remove(id: number, user: User) {
+    const existingNote = await this.notesRepository.findByIdForUser(id, user.id);
+    if (!existingNote) {
+      throw new NotFoundException(`Note not found.`);
+    }
+    return await this.notesRepository.remove(id, user.id);
   }
 }
