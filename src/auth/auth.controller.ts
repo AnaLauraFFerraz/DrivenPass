@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpException, HttpStatus, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/signup.dto';
 import { SignInDto } from './dto/signin.dto';
@@ -9,13 +9,21 @@ export class AuthController {
 
     @Post("sign-up")
     @HttpCode(HttpStatus.CREATED)
-    signUp(@Body() signUpDto: SignUpDto) {
-        return this.authService.signUp(signUpDto);
+    async signUp(@Body() signUpDto: SignUpDto) {
+        try {
+            return await this.authService.signUp(signUpDto);
+        } catch (error) {
+            throw new HttpException(error.response, error.status);
+        }
     }
 
     @Post("sign-in")
     @HttpCode(HttpStatus.OK)
-    signIn(@Body() signInDto: SignInDto) {
-        return this.authService.signIn(signInDto);
+    async signIn(@Body() signInDto: SignInDto) {
+        try {
+            return await this.authService.signIn(signInDto);
+        } catch (error) {
+            throw new HttpException(error.response, error.status);
+        }
     }
 }
