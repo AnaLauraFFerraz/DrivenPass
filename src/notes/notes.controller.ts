@@ -29,6 +29,7 @@ export class NotesController {
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   findOne(@Param('id') id: string, @User() user: UserPrisma) {
     try {
       return this.notesService.findOne(+id, user);
