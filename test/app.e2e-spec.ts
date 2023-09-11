@@ -49,28 +49,4 @@ describe('AppController (e2e)', () => {
 
     expect(user).not.toBe(null);
   })
-
-  // it('POST /notes => should create a credential', async () => {
-  //   // setup
-  //   const user = await prisma.user.create({
-  //     data: {
-  //       email: "test@test.com",
-  //       password: "Test!@#$12"
-  //     }
-  //   })
-
-  //   await request(app.getHttpServer())
-  //     .post("/notes")
-  //     .send({
-  //       title: "Test",
-  //       note: "Test note"
-  //     })
-  //     .expect(HttpStatus.CREATED)
-    
-  //     const note = await prisma.note.findFirst({
-  //       where: {userId: user.id}
-  //     })
-    
-  //     expect(note.title).toBe("Test note");
-  // })
 });
