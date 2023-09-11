@@ -14,7 +14,7 @@ describe('CredentialsController (e2e)', () => {
   let token: string;
   let credentialFactory: CredentialFactory;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule, PrismaModule],
     }).overrideProvider(PrismaService)
@@ -24,8 +24,8 @@ describe('CredentialsController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
 
+    prisma = app.get(PrismaService);
     await clearDatabase(prisma);
-    
     await app.init();
 
     const hashedPassword = await bcrypt.hash('StrongPass!123', 10);
@@ -43,9 +43,9 @@ describe('CredentialsController (e2e)', () => {
         password: 'StrongPass!123',
       });
 
-      token = response.body.token;
+    token = response.body.token;
 
-      credentialFactory = new CredentialFactory(app, token);
+    credentialFactory = new CredentialFactory(app, token);
   });
 
   afterAll(async () => {
@@ -65,7 +65,6 @@ describe('CredentialsController (e2e)', () => {
       .expect(HttpStatus.CREATED);
   });
   
-
   it('should not create a credential with an existing title', async () => {
     await request(app.getHttpServer())
       .post('/credentials')
@@ -96,35 +95,35 @@ describe('CredentialsController (e2e)', () => {
       .expect(HttpStatus.OK);
   });
 
-  // it('should fetch a specific credential', async () => {
-  //   const createResponse = await credentialFactory.create(
-  //     'Test Credential',
-  //     'https://google.com.br',
-  //     'testuser@example.com',
-  //     'StrongPass!123'
-  //   );
-  //   const credentialId = createResponse.body.id;
-    
-  //   return request(app.getHttpServer())
-  //     .get(`/credentials/${credentialId}`)
-  //     .set('Authorization', `Bearer ${token}`)
-  //     .expect(HttpStatus.OK);
-  // });
+  it('should fetch a specific credential', async () => {
+    const createResponse = await credentialFactory.create(
+      'Test Credential',
+      'https://google.com.br',
+      'testuser@example.com',
+      'StrongPass!123'
+    );
+    const credentialId = createResponse.body.id;
 
-  // it('should delete a credential', async () => {
-  //   const createResponse = await credentialFactory.create(
-  //     'Test Credential',
-  //     'https://google.com.br',
-  //     'testuser@example.com',
-  //     'StrongPass!123'
-  //   );
-  //   const credentialId = createResponse.body.id;
+    return request(app.getHttpServer())
+      .get(`/credentials/${Number(credentialId)}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(HttpStatus.OK);
+  });
 
-  //   return request(app.getHttpServer())
-  //     .delete(`/credentials/${credentialId}`)
-  //     .set('Authorization', `Bearer ${token}`)
-  //     .expect(HttpStatus.NO_CONTENT);
-  // });
+  it('should delete a credential', async () => {
+    const createResponse = await credentialFactory.create(
+      'Test Credential',
+      'https://google.com.br',
+      'testuser@example.com',
+      'StrongPass!123'
+    );
+    const credentialId = createResponse.body.id;
+
+    return request(app.getHttpServer())
+      .delete(`/credentials/${credentialId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(HttpStatus.NO_CONTENT);
+  });
 
   it('should return 404 when fetching a non-existent credential', async () => {
     const nonExistentCredentialId = 9999;

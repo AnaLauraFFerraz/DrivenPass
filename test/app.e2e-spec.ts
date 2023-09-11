@@ -31,7 +31,7 @@ describe('AppController (e2e)', () => {
     return request(app.getHttpServer())
       .get('/health')
       .expect(HttpStatus.OK)
-      .expect("I'm okay");
+      .expect("I'm okay!");
   });
 
   it('POST /auth/sign-up => should sign-up successfully', async () => {
