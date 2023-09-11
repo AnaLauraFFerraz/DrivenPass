@@ -1,22 +1,32 @@
 import * as request from 'supertest';
+import { INestApplication } from '@nestjs/common';
+import { CardType } from '@prisma/client';
 
 export class CardsFactory {
-  constructor(private readonly app: any, private readonly token: string) {}
+  constructor(private app: INestApplication, private token: string) {}
 
-  async create(title: string, password: string, securityCode: string) {
+  async create(
+    title: string,
+    cardNumber: string,
+    printedName: string,
+    securityCode: string,
+    expiration: string,
+    password: string,
+    isVirtual: boolean,
+    type: CardType
+  ) {
     return request(this.app.getHttpServer())
       .post('/cards')
       .set('Authorization', `Bearer ${this.token}`)
       .send({
         title,
+        cardNumber,
+        printedName,
+        securityCode,
+        expiration,
         password,
-        securityCode
+        isVirtual,
+        type
       });
-  }
-
-  async delete(id: number) {
-    return request(this.app.getHttpServer())
-      .delete(`/cards/${id}`)
-      .set('Authorization', `Bearer ${this.token}`);
   }
 }

@@ -7,6 +7,7 @@ import { PrismaService } from '../../src/prisma/prisma.service';
 import { PrismaModule } from '../../src/prisma/prisma.module';
 import { CardsFactory } from '../factories/card.factory';
 import { clearDatabase } from '../utils/database';
+import { CardType } from '@prisma/client';
 
 describe('CardsController (e2e)', () => {
   let app: INestApplication;
@@ -14,7 +15,7 @@ describe('CardsController (e2e)', () => {
   let token: string;
   let cardsFactory: CardsFactory;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule, PrismaModule],
     }).overrideProvider(PrismaService)
@@ -24,6 +25,7 @@ describe('CardsController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
 
+    prisma = app.get(PrismaService);
     await clearDatabase(prisma);
     await app.init();
     
@@ -50,10 +52,20 @@ describe('CardsController (e2e)', () => {
     await app.close();
   });
 
-//   it('should create a new card', async () => {
-//     const response = await cardsFactory.create('Test Card', 'TestPassword123', '123');
-//     expect(response.status).toBe(HttpStatus.CREATED);
-//   });
+  it('should create a new card', async () => {
+    const response = await cardsFactory.create(
+      'Test Card',
+      '1234567890123456',
+      'Test User',
+      '123',
+      '12/26',
+      'TestPassword123',
+      true,
+      CardType.CREDIT
+    );
+
+    expect(response.status).toBe(HttpStatus.CREATED);
+  });
 
   it('should fetch all cards', async () => {
     return request(app.getHttpServer())
@@ -62,23 +74,43 @@ describe('CardsController (e2e)', () => {
       .expect(HttpStatus.OK);
   });
 
-//   it('should fetch a specific card', async () => {
-//     const createResponse = await cardsFactory.create('Another Test Card', 'AnotherTestPassword123', '456');
-//     const cardId = createResponse.body.id;
-//     return request(app.getHttpServer())
-//       .get(`/cards/${cardId}`)
-//       .set('Authorization', `Bearer ${token}`)
-//       .expect(HttpStatus.OK);
-//   });
+  it('should fetch a specific card', async () => {
+    const createResponse = await cardsFactory.create(
+      'Another Test Card',
+      '2345678901234567',
+      'Another User',
+      '456',
+      '12/26',
+      'AnotherTestPassword123',
+      false,
+      CardType.DEBIT
+    );
+    const cardId = createResponse.body.id;
+    
+    return request(app.getHttpServer())
+      .get(`/cards/${cardId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(HttpStatus.OK);
+  });
 
-//   it('should delete a card', async () => {
-//     const createResponse = await cardsFactory.create('Final Test Card', 'FinalTestPassword123', '111');
-//     const cardId = createResponse.body.id;
-//     return request(app.getHttpServer())
-//       .delete(`/cards/${cardId}`)
-//       .set('Authorization', `Bearer ${token}`)
-//       .expect(HttpStatus.NO_CONTENT);
-//   });
+  it('should delete a card', async () => {
+    const createResponse = await cardsFactory.create(
+      'Final Test Card',
+      '3456789012345678',
+      'Final User',
+      '789',
+      '12/26',
+      'FinalTestPassword123',
+      true,
+      CardType.BOTH
+    );
+    const cardId = createResponse.body.id;
+
+    return request(app.getHttpServer())
+      .delete(`/cards/${cardId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(HttpStatus.NO_CONTENT);
+  });
 
   it('should return 404 when fetching a non-existent card', async () => {
     const nonExistentCardId = 9999;
